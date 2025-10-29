@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>路锥产品价格计算系统</title>
+    <title>路锥价格计算系统</title>
     <style>
         * {
             box-sizing: border-box;
@@ -32,6 +32,26 @@
             padding: 12px;
             display: flex;
             flex-direction: column;
+            position: relative;
+        }
+        
+        /* 公司Logo样式 */
+        .company-logo {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            z-index: 10;
+            width: 120px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .company-logo img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
         }
         
         header {
@@ -40,6 +60,7 @@
             padding-bottom: 8px;
             border-bottom: 1px solid #eee;
             flex-shrink: 0;
+            padding-top: 10px; /* 为logo留出空间 */
         }
         
         h1 {
@@ -52,6 +73,7 @@
             position: relative;
             margin-bottom: 12px;
             flex-shrink: 0;
+            margin-top: 10px; /* 确保搜索框不被logo遮挡 */
         }
         
         .search-box {
@@ -103,7 +125,7 @@
             gap: 10px;
             flex: 1;
             min-height: 0;
-            height: 380px; /* 增加整体高度 */
+            height: 380px;
         }
         
         .image-section {
@@ -113,7 +135,7 @@
         
         .product-image {
             width: 100%;
-            height: 200px; /* 增加图片高度 */
+            height: 200px;
             background-color: #f8f9fa;
             border: 1px solid #eee;
             border-radius: 3px;
@@ -122,7 +144,7 @@
             justify-content: center;
             cursor: pointer;
             overflow: hidden;
-            padding: 10px; /* 增加内边距 */
+            padding: 10px;
         }
         
         .product-image img {
@@ -223,29 +245,52 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: rgba(0, 0, 0, 0.95);
             z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            overflow: auto;
+            touch-action: none;
+        }
+        
+        .modal-content {
+            max-width: 95%;
+            max-height: 95%;
+            position: relative;
+            display: flex;
             align-items: center;
             justify-content: center;
         }
         
-        .modal-content {
-            max-width: 90%;
-            max-height: 90%;
-        }
-        
         .modal-content img {
-            width: 100%;
+            max-width: 100%;
+            max-height: 100vh;
+            width: auto;
             height: auto;
+            cursor: grab;
+            transition: transform 0.1s ease;
+            object-fit: contain;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
         
         .close-modal {
-            position: absolute;
-            top: 10px;
-            right: 15px;
+            position: fixed;
+            top: 20px;
+            right: 30px;
             color: white;
-            font-size: 24px;
+            font-size: 40px;
             cursor: pointer;
+            z-index: 1001;
+            background: rgba(0,0,0,0.5);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .disabled {
@@ -274,8 +319,16 @@
                 border-radius: 8px;
             }
             
+            .company-logo {
+                top: 25px;
+                left: 25px;
+                width: 150px;
+                height: 50px;
+            }
+            
             header {
                 margin-bottom: 20px;
+                padding-top: 15px;
             }
             
             h1 {
@@ -284,6 +337,7 @@
             
             .search-section {
                 margin-bottom: 20px;
+                margin-top: 15px;
             }
             
             input, select {
@@ -322,12 +376,35 @@
                 font-size: 16px;
             }
         }
+
+        /* 移动端小屏幕优化 */
+        @media (max-width: 480px) {
+            .company-logo {
+                width: 100px;
+                height: 35px;
+                top: 10px;
+                left: 10px;
+            }
+            
+            header {
+                padding-top: 5px;
+            }
+            
+            .search-section {
+                margin-top: 5px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- 公司Logo -->
+        <div class="company-logo">
+            <img src="https://pic1.imgdb.cn/item/69016ac53203f7be00ad3317.png" alt="公司Logo">
+        </div>
+        
         <header>
-            <h1>HQ路锥价格计算</h1>
+            <h1>路锥价格计算</h1>
             <p>支持模糊搜索产品型号(搜索产品 → 选择膜类型 → 查看价格)</p>
         </header>
         
@@ -361,7 +438,7 @@
                     </div>
                     
                     <div class="additional-costs">
-                        <h4>其他费用(新开的膜找研发部报价)</h4>
+                        <h4>其他费用（新开的膜需找研发部报价）</h4>
                         <input type="number" id="additionalFilmCost" placeholder="新膜价格" min="0" step="0.1">
                         <input type="number" id="packagingCost" placeholder="包装费用" min="0" step="0.1">
                     </div>
@@ -1754,6 +1831,7 @@
             // 继续添加其他产品数据...
             // 由于数据量很大，这里只展示部分，您可以根据需要继续添加
         ];
+
         // DOM元素
         const searchInput = document.getElementById('searchInput');
         const autocompleteList = document.getElementById('autocomplete-list');
@@ -1779,6 +1857,33 @@
         const closeModal = document.querySelector('.close-modal');
 
         let selectedProduct = null;
+
+        // 图片缩放和拖拽功能
+        let scale = 1;
+        let isDragging = false;
+        let startX, startY, translateX = 0, translateY = 0;
+        let initialDistance = 0;
+
+        function resetImageZoom() {
+            scale = 1;
+            translateX = 0;
+            translateY = 0;
+            modalImage.style.transform = 'scale(1)';
+            modalImage.style.cursor = 'grab';
+        }
+
+        function updateImageTransform() {
+            modalImage.style.transform = `scale(${scale}) translate(${translateX}px, ${translateY}px)`;
+        }
+
+        function startDrag(clientX, clientY) {
+            if (scale > 1) {
+                isDragging = true;
+                startX = clientX - translateX;
+                startY = clientY - translateY;
+                modalImage.style.cursor = 'grabbing';
+            }
+        }
 
         // 自动完成功能
         function autocomplete(input, arr) {
@@ -1872,7 +1977,7 @@
             productDescription.innerHTML = product.description.replace(/\n/g, '<br>');
             
             productImage.innerHTML = product.image ? 
-                `<img src="${product.image}" alt="${product.name}">` : 
+                `<img src="${product.image}" alt="${product.name}" style="max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain;">` : 
                 `<span>暂无图片</span>`;
             
             filmSelect.innerHTML = '<option value="">-- 选择膜 --</option>';
@@ -1920,21 +2025,126 @@
             foreignTotalPriceEl.textContent = foreignTotalPrice.toFixed(2) + ' 元';
         }
 
+        // 图片功能
         productImage.addEventListener('dblclick', () => {
             if (selectedProduct && selectedProduct.image) {
                 modalImage.src = selectedProduct.image;
                 imageModal.style.display = 'flex';
+                resetImageZoom();
             }
         });
 
+        // 鼠标滚轮缩放
+        modalImage.addEventListener('wheel', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const delta = e.deltaY > 0 ? 0.9 : 1.1;
+            scale *= delta;
+            scale = Math.max(0.5, Math.min(scale, 3));
+            
+            updateImageTransform();
+        });
+
+        // 移动端双指缩放
+        modalImage.addEventListener('touchstart', function(e) {
+            if (e.touches.length === 2) {
+                e.preventDefault();
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                initialDistance = Math.sqrt(
+                    Math.pow(touch2.clientX - touch1.clientX, 2) + 
+                    Math.pow(touch2.clientY - touch1.clientY, 2)
+                );
+            } else if (e.touches.length === 1 && scale > 1) {
+                const touch = e.touches[0];
+                startDrag(touch.clientX, touch.clientY);
+            }
+        });
+
+        modalImage.addEventListener('touchmove', function(e) {
+            if (e.touches.length === 2) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                const currentDistance = Math.sqrt(
+                    Math.pow(touch2.clientX - touch1.clientX, 2) + 
+                    Math.pow(touch2.clientY - touch1.clientY, 2)
+                );
+                
+                if (initialDistance > 0) {
+                    const delta = currentDistance / initialDistance;
+                    const newScale = scale * delta;
+                    
+                    scale = Math.max(0.5, Math.min(newScale, 3));
+                    updateImageTransform();
+                    
+                    initialDistance = currentDistance;
+                }
+            } else if (e.touches.length === 1 && scale > 1) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                
+                if (isDragging) {
+                    translateX = touch.clientX - startX;
+                    translateY = touch.clientY - startY;
+                    updateImageTransform();
+                }
+            }
+        });
+
+        modalImage.addEventListener('touchend', function(e) {
+            if (e.touches.length === 0) {
+                initialDistance = 0;
+                isDragging = false;
+                modalImage.style.cursor = 'grab';
+            }
+        });
+
+        // 鼠标拖拽
+        modalImage.addEventListener('mousedown', function(e) {
+            startDrag(e.clientX, e.clientY);
+        });
+
+        document.addEventListener('mousemove', function(e) {
+            if (!isDragging) return;
+            
+            translateX = e.clientX - startX;
+            translateY = e.clientY - startY;
+            
+            updateImageTransform();
+        });
+
+        document.addEventListener('mouseup', function() {
+            isDragging = false;
+            modalImage.style.cursor = 'grab';
+        });
+
+        // 图片双击重置缩放
+        modalImage.addEventListener('dblclick', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            resetImageZoom();
+        });
+
+        // 关闭功能
         closeModal.addEventListener('click', () => {
+            resetImageZoom();
             imageModal.style.display = 'none';
         });
 
         imageModal.addEventListener('click', (e) => {
             if (e.target === imageModal) {
+                resetImageZoom();
                 imageModal.style.display = 'none';
             }
+        });
+
+        // 阻止图片点击关闭模态框
+        modalImage.addEventListener('click', function(e) {
+            e.stopPropagation();
         });
 
         filmSelect.addEventListener('change', calculatePrice);
